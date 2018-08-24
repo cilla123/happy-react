@@ -1,0 +1,52 @@
+{
+  "name": "happy-react",
+  "version": "0.0.1",
+  "description": "react full-stack ",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --mode=development --config build/webpack.config.client.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cilla123/happy-react.git"
+  },
+  "keywords": [
+    "react",
+    "full-stack"
+  ],
+  "author": "Ben赖珏豪",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cilla123/happy-react/issues"
+  },
+  "homepage": "https://github.com/cilla123/happy-react#readme",
+  "dependencies": {
+    "happy-utils": "^1.2.8",
+    "mobx": "^5.0.4",
+    "mobx-react": "^5.2.5",
+    "react": "^16.4.2",
+    "react-router": "^4.3.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-plugin-transform-decorators-legacy": "^1.3.5",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-1": "^6.24.1",
+    "cross-env": "^5.2.0",
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-loader": "^2.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.11.1",
+    "html-webpack-plugin": "^3.2.0",
+    "react-hot-loader": "^4.3.5",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5",
+    "webpack-merge": "^4.1.4"
+  }
+}
