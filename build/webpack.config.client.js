@@ -45,7 +45,7 @@ if (isDev) {
   config.devServer = {
     host: '127.0.0.1',
     compress: true,
-    port: '9000',
+    port: '8080',
     contentBase: path.join(__dirname, '../dist'),
     hot: true,
     overlay: {
