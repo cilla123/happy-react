@@ -1,3 +1,4 @@
+/* eslint-disable */
 const path = require('path')
 
 module.exports = {
@@ -15,13 +16,13 @@ module.exports = {
       loader: 'eslint-loader',
       exclude: [
         path.resolve(__dirname, '../node_modules')
-      ]
+      ],
     },{
       test: /.jsx$/,
-      loader: 'babel-loader'
+      use: 'babel-loader?cacheDirectory'
     },{
       test: /.js$/,
-      loader: 'babel-loader',
+      use: 'babel-loader?cacheDirectory',
       exclude: [
         path.join(__dirname, '../node_modules')
       ]

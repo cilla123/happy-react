@@ -1,3 +1,4 @@
+/* eslint-disable */
 const path = require('path')
 const webpack = require('webpack')
 const webpackMerge = require('webpack-merge')
@@ -27,7 +28,7 @@ const config = webpackMerge(baseConfig, {
 })
 
 if (isDev) {
-  // file enrty 
+  // file enrty
   config.entry = {
     app: [
       'react-hot-loader/patch',
@@ -44,21 +45,21 @@ if (isDev) {
   config.devServer = {
     host: '127.0.0.1',
     compress: true,
-    port: '8888',
+    port: '9000',
     contentBase: path.join(__dirname, '../dist'),
     hot: true,
     overlay: {
-      errors: true
+      errors: true,
     },
     publicPath: GLOBAL_CONFIG.cdnPath,
     historyApiFallback: {
-      index: `${GLOBAL_CONFIG.cdnPath}/index.html`
+      index: `${GLOBAL_CONFIG.cdnPath}/index.html`,
     },
     proxy: {
-      '/api': 'http://localhost:3333'
-    }
+      '/api': 'http://localhost:3333',
+    },
   }
   config.plugins.push(new webpack.HotModuleReplacementPlugin())
 }
 
-module.exports = config
+module.exports = config;
