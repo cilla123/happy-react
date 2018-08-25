@@ -1,6 +1,7 @@
 import React, { Component, PureComponent } from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
+import registerServiceWorker from './registerServiceWorker';
 
 /**
  * Main
@@ -13,9 +14,11 @@ class App extends (PureComponent || Component) {
 
 if (typeof window !== 'undefined') {
   render(
-    <BrowserRouter>
+    <HashRouter>
       <App />
-    </BrowserRouter>,
+    </HashRouter>,
     window.document.getElementById('app'),
   );
 }
+
+registerServiceWorker();
