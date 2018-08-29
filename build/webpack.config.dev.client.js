@@ -27,7 +27,7 @@ const config = {
       index: `${GLOBAL_CONFIG.cdnPath}/index.html`
     },
     proxy: {
-      '/api': 'http://localhost:3333',
+      '/api': 'http://localhost:3000',
     },
   },
   plugins: [
