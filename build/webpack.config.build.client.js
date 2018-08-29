@@ -8,7 +8,7 @@ const package = require('../package.json')
 
 const config = {
   plugins: [
-    // pwa workbox plugins
+    // pwa 插件
     new GenerateSW({
       // set prefix
       cacheId: 'webpack-pwa',
@@ -23,6 +23,7 @@ const config = {
         handler: 'networkFirst' // 网络优先
       }]
     }),
+    // dll 生成
     new AutoDllPlugin({
       // 插入html
       inject: true,
