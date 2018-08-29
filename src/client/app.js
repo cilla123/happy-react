@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
     <HashRouter>
       <App />
     </HashRouter>,
-    window.document.getElementById('app'),
+    document.getElementById('app'),
   );
 }
 
