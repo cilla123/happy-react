@@ -12,13 +12,11 @@ class App extends (PureComponent || Component) {
   }
 }
 
-if (typeof window !== 'undefined') {
-  render(
-    <HashRouter>
-      <App />
-    </HashRouter>,
-    document.getElementById('app'),
-  );
-}
+render(
+  <HashRouter>
+    <App />
+  </HashRouter>,
+  document.getElementById('app'),
+);
 
 registerServiceWorker();
