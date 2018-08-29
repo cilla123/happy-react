@@ -1,7 +1,6 @@
 /* eslint-disable */
 const path = require('path')
 const os = require('os')
-const webpack = require('webpack');
 const HTMLPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 

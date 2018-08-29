@@ -1,11 +1,11 @@
 /* eslint-disable */
 const path = require('path')
-const { NamedModulesPlugin, HotModuleReplacementPlugin, DllReferencePlugin } = require('webpack')
+const { NamedModulesPlugin, HotModuleReplacementPlugin } = require('webpack')
 
 const GLOBAL_CONFIG = require('../deploy/index')
 
 const config = {
-  // file enrty
+  // 文件入口
   entry: {
     app: [
       'react-hot-loader/patch',
