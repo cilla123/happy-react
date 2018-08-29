@@ -2,7 +2,6 @@
 const merge = require('webpack-merge')
 
 const baseConfig = require('./webpack.config.base.js')
-// const dllConfig = require('./webpack_dll.config.js')
 
 let config
 if (process.env.NODE_ENV === 'production') {

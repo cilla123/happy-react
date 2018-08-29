@@ -8,7 +8,7 @@ import registerServiceWorker from './registerServiceWorker';
  */
 class App extends (PureComponent || Component) {
   render() {
-    return <div>Hello Happy React!!</div>;
+    return <div>Hello Happy React!!!</div>;
   }
 }
 

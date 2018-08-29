@@ -39,6 +39,40 @@ module.exports = {
     publicPath: GLOBAL_CONFIG.cdnPath,
   },
 
+  // webpack根据下述条件自动进行代码块分割：
+  // 新代码块可以被共享引用， OR这些模块都是来自node_modules文件夹里面
+  // 新代码块大于30kb（ min + gziped之前的体积）
+  // 按需加载的代码块， 最大数量应该小于或者等于5
+  // 初始加载的代码块， 最大数量应该小于或等于3
+  optimization: {
+    // runtimeChunk: {
+    //     name: "manifest"
+    // },
+    splitChunks: {
+      chunks: "initial", // 代码块类型 必须三选一： "initial"（初始化） | "all"(默认就是all) | "async"（动态加载）
+      minSize: 0, // 最小尺寸，默认0
+      minChunks: 1, // 最小 chunk ，默认1
+      maxAsyncRequests: 1, // 最大异步请求数， 默认1
+      maxInitialRequests: 1, // 最大初始化请求书，默认1
+      name: () => {}, // 名称，此选项可接收 function
+      cacheGroups: { // 缓存组会继承splitChunks的配置，但是test、priorty和reuseExistingChunk只能用于配置缓存组。
+        commons: {  
+          chunks: 'initial',
+          minChunks: 2,
+          maxInitialRequests: 5,
+          minSize: 0
+        },
+        vendor: { // 将第三方模块提取出来，key 为entry中定义的 入口名称
+          test: /node_modules/,
+          chunks: 'initial',
+          name: 'vendor',
+          priority: 10, // 缓存组优先级 false | object |
+          enforce: true
+        }
+      }
+    }
+  },
+
   // 文件解析
   resolve: {
     // 后缀列表尽可能小, 频率最高的往前放, 导出语句尽可能带上后缀
@@ -56,6 +90,7 @@ module.exports = {
     },
   },
 
+  // 模块
   module: {
     rules: [{
       enforce: 'pre',
@@ -80,14 +115,21 @@ module.exports = {
     }
   },
 
-  /**
-   * webpack plugins
-   */
+  // webpack的插件
   plugins: [
     new HTMLPlugin({
       template: path.join(__dirname, '../src/client/index.html')
     }),
-    new CleanWebpackPlugin([resolve('../dist')]),
+    new CleanWebpackPlugin(
+      ['dist'],{
+        // 根目录
+        root: resolve('../'),
+        // 开启在控制台输出信息
+        verbose: true,
+        // 启用删除文件
+        dry: false
+      }
+    ),
     new HappyPack({
       // 用id来标识 happypack处理那里类文件
       id: 'babel',

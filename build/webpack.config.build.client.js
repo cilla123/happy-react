@@ -1,16 +1,13 @@
 /* eslint-disable */
 const { GenerateSW } = require('workbox-webpack-plugin')
 const AutoDllPlugin = require('autodll-webpack-plugin')
+const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
 
 // package.json
 const package = require('../package.json')
 
 const config = {
   plugins: [
-    // new HTMLPlugin({
-    //   template: '!!ejs-compiled-loader!' + path.join(__dirname, '../client/server.template.ejs'),
-    //   filename: 'server.ejs'
-    // })
     // pwa workbox plugins
     new GenerateSW({
       // set prefix
@@ -35,6 +32,23 @@ const config = {
         vendor: Object.keys(package.dependencies).filter(item => {
           return item != 'vue'
         })
+      }
+    }),
+    // 把对JS文件的串行压缩变为开启多个子进程并行进行uglify
+    new ParallelUglifyPlugin({
+      workerCount: 4,
+      sourceMap: true,
+      uglifyJS: {
+        output: {
+          beautify: false, // 不需要格式化
+          comments: false // 保留注释
+        },
+        compress: { // 压缩
+          warnings: false, // 删除无用代码时不输出警告
+          drop_console: true, // 删除console语句
+          collapse_vars: true, // 内嵌定义了但是只有用到一次的变量
+          reduce_vars: true // 提取出出现多次但是没有定义成变量去引用的静态值
+        }
       }
     })
   ]
