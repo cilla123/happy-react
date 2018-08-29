@@ -1,14 +1,11 @@
 /* eslint-disable */
-const path = require('path')
-const webpack = require('webpack')
-const webpackMerge = require('webpack-merge')
-const HTMLPlugin = require('html-webpack-plugin')
 const { GenerateSW } = require('workbox-webpack-plugin')
+const AutoDllPlugin = require('autodll-webpack-plugin')
 
-const baseConfig = require('./webpack.config.base')
-const GLOBAL_CONFIG = require('../deploy/index')
+// package.json
+const package = require('../package.json')
 
-const config = webpackMerge(baseConfig, {
+const config = {
   plugins: [
     // new HTMLPlugin({
     //   template: '!!ejs-compiled-loader!' + path.join(__dirname, '../client/server.template.ejs'),
@@ -28,8 +25,19 @@ const config = webpackMerge(baseConfig, {
         urlPattern: /.*\.js/, // 匹配文件
         handler: 'networkFirst' // 网络优先
       }]
+    }),
+    new AutoDllPlugin({
+      // 插入html
+      inject: true,
+      debug: true,
+      filename: '[name]_[hash].js',
+      entry: {
+        vendor: Object.keys(package.dependencies).filter(item => {
+          return item != 'vue'
+        })
+      }
     })
   ]
-})
+}
 
 module.exports = config;

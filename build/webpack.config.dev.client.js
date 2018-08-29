@@ -1,14 +1,10 @@
 /* eslint-disable */
 const path = require('path')
-const { NamedModulesPlugin, HotModuleReplacementPlugin } = require('webpack')
-const webpackMerge = require('webpack-merge')
+const { NamedModulesPlugin, HotModuleReplacementPlugin, DllReferencePlugin } = require('webpack')
 
-const baseConfig = require('./webpack.config.base')
 const GLOBAL_CONFIG = require('../deploy/index')
 
-const isDev = process.env.NODE_ENV === 'development'
-
-const config = webpackMerge(baseConfig, {
+const config = {
   // file enrty
   entry: {
     app: [
@@ -16,10 +12,6 @@ const config = webpackMerge(baseConfig, {
       path.join(__dirname, '../src/client/app.js')
     ]
   },
-  plugins: [
-    new NamedModulesPlugin(),
-    new HotModuleReplacementPlugin()
-  ],
   // local server is used to local test
   devServer: {
     host: '127.0.0.1',
@@ -38,6 +30,10 @@ const config = webpackMerge(baseConfig, {
       '/api': 'http://localhost:3333',
     },
   },
-})
+  plugins: [
+    new NamedModulesPlugin(),
+    new HotModuleReplacementPlugin(),
+  ],
+}
 
 module.exports = config;
