@@ -3,6 +3,7 @@ const path = require('path')
 const os = require('os')
 const HTMLPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
+var ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 // HappyPack是让webpack对loader的执行过程，从单一进程形式扩展为多进程模式，也就是将任务分解给多个子进程去并发的执行，子进程处理完后再把结果发送给主进程。从而加速代码构建 与 DLL动态链接库结合来使用更佳。
 const HappyPack = require('happypack')
@@ -25,7 +26,7 @@ const excludeSourcePaths = [resolve('../node_modules')]
 const includeSourcePaths = [resolve('../src')]
 
 module.exports = {
-  
+
   // 文件入口
   entry: {
     app: resolve('../src/client/app.js'),
@@ -55,7 +56,7 @@ module.exports = {
       maxInitialRequests: 1, // 最大初始化请求书，默认1
       name: () => {}, // 名称，此选项可接收 function
       cacheGroups: { // 缓存组会继承splitChunks的配置，但是test、priorty和reuseExistingChunk只能用于配置缓存组。
-        commons: {  
+        commons: {
           chunks: 'initial',
           minChunks: 2,
           maxInitialRequests: 5,
@@ -84,8 +85,9 @@ module.exports = {
     // 配置路径别名
     alias: {
       // 'vue$': 'vue/dist/vue.common.js', // $表示精确匹配，目前用不上
-      components: resolve('../src/client/components'),
-      bussiness_components: resolve('../src/client/bussiness_components'),
+      '@components': resolve('../src/client/components'),
+      '@bussiness_components': resolve('../src/client/bussiness_components'),
+      '@views': resolve('../src/client/views'),
     },
   },
 
@@ -94,24 +96,49 @@ module.exports = {
     rules: [{
       enforce: 'pre',
       test: /.(js|jsx)$/,
-      loader: 'eslint-loader',
+      // loader: 'eslint-loader', // 目前先注释
       exclude: excludeSourcePaths,
       include: includeSourcePaths
-    },{
+    }, {
       test: /.jsx$/,
       use: 'happypack/loader?id=babel',
       exclude: excludeSourcePaths,
       include: includeSourcePaths
-    },{
+    }, {
       test: /.js$/,
       use: 'happypack/loader?id=babel',
       exclude: excludeSourcePaths,
       include: includeSourcePaths
+    }, {
+      test: /\.css$/,
+      use: ExtractTextPlugin.extract({
+        fallback: 'style-loader', // 回滚
+        use: [{
+          loader: 'css-loader',
+          options: {
+            minimize: true //css压缩
+          }
+        }, 'postcss-loader'],
+        publicPath: GLOBAL_CONFIG.cdnPath //解决css背景图的路径问题
+      })
+    }, {
+      test: /\.(sass|scss)$/,
+      use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'] // 编译顺序从右往左
+    }, {
+      test: /\.(png|jpg|gif)$/,
+      use: [{
+        loader: 'url-loader',
+        options: { // 这里的options选项参数可以定义多大的图片转换为base64
+          limit: 50000, // 表示小于50kb的图片转为base64,大于50kb的是路径
+          outputPath: 'images' //定义输出的图片文件夹
+        }
+      }]
     }],
     // 用了noParse的模块将不会被loaders解析，所以使用的库如果太大，并且其中不包含import require、define的调用，就可以使用这项配置来提升性能, 让 Webpack 忽略对部分没采用模块化的文件的递归解析处理。
-    noParse: function (content) {
-      return /jquery|lodash/.test(content)
-    }
+    // 但是node_modules中有的第三方框架有依赖lodash或者jquery之类的库，建议不要加入，不然容易报错
+    // noParse: function (content) {
+    //   return /jquery|lodash/.test(content)
+    // }
   },
 
   // webpack的插件
@@ -119,8 +146,11 @@ module.exports = {
     new HTMLPlugin({
       template: path.join(__dirname, '../src/client/index.html')
     }),
+    new ExtractTextPlugin({
+      filename: '[name].[hash].css',
+    }),
     new CleanWebpackPlugin(
-      ['dist'],{
+      ['dist'], {
         // 根目录
         root: resolve('../'),
         // 开启在控制台输出信息

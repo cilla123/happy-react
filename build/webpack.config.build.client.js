@@ -1,13 +1,34 @@
 /* eslint-disable */
+const HTMLPlugin = require('html-webpack-plugin')
 const { GenerateSW } = require('workbox-webpack-plugin')
 const AutoDllPlugin = require('autodll-webpack-plugin')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
+const PurifyCssWebpack = require('purifycss-webpack')
+const path = require('path')
+
+const glob = require('glob')
 
 // package.json
 const package = require('../package.json')
 
+/**
+ * 转换为绝对路径
+ */
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
+
 const config = {
   plugins: [
+    // 消除冗余的css代码
+    new PurifyCssWebpack({
+      paths: glob.sync(resolve('../src/*.html'))
+    }),
+    new HTMLPlugin({
+      template: path.join(__dirname, '../src/client/index.html'),
+      minify: true, // 传一个html-minifier 配置object来压缩输出
+      hash: true, // 如果是true，会给所有包含的script和css添加一个唯一的webpack编译hash值。这对于缓存清除非常有用
+    }),
     // pwa 插件
     new GenerateSW({
       // set prefix
@@ -28,11 +49,9 @@ const config = {
       // 插入html
       inject: true,
       debug: true,
-      filename: '[name]_[hash].js',
+      filename: 'dll_[name]_[hash].js',
       entry: {
-        vendor: Object.keys(package.dependencies).filter(item => {
-          return item != 'vue'
-        })
+        vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'react-router', 'react-router-dom']
       }
     }),
     // 把对JS文件的串行压缩变为开启多个子进程并行进行uglify

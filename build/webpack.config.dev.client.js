@@ -1,6 +1,9 @@
 /* eslint-disable */
 const path = require('path')
-const { NamedModulesPlugin, HotModuleReplacementPlugin } = require('webpack')
+const {
+  NamedModulesPlugin,
+  HotModuleReplacementPlugin
+} = require('webpack')
 
 const GLOBAL_CONFIG = require('../deploy/index')
 
