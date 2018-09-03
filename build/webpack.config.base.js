@@ -22,7 +22,9 @@ function resolve(dir) {
   return path.join(__dirname, dir);
 }
 
+// 排除的代码路径
 const excludeSourcePaths = [resolve('../node_modules')]
+// 包含的代码路径
 const includeSourcePaths = [resolve('../src')]
 
 module.exports = {
@@ -82,7 +84,7 @@ module.exports = {
       resolve('../src'),
       resolve('../node_modules'), // 指定node_modules所在位置 当import 第三方模块时 直接从这个路径下搜索寻找
     ],
-    // 配置路径别名
+    // 配置路径别名，此处可以进行优化webpack的速度，让webpack以绝对路径来找引入的代码
     alias: {
       // 'vue$': 'vue/dist/vue.common.js', // $表示精确匹配，目前用不上
       '@components': resolve('../src/client/components'),
@@ -113,17 +115,12 @@ module.exports = {
       test: /\.css$/,
       use: ExtractTextPlugin.extract({
         fallback: 'style-loader', // 回滚
-        use: [{
-          loader: 'css-loader',
-          options: {
-            minimize: true //css压缩
-          }
-        }, 'postcss-loader'],
+        use: 'happypack/loader?id=css',
         publicPath: GLOBAL_CONFIG.cdnPath //解决css背景图的路径问题
       })
     }, {
       test: /\.(sass|scss)$/,
-      use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'] // 编译顺序从右往左
+      use: 'happypack/loader?id=sass'
     }, {
       test: /\.(png|jpg|gif)$/,
       use: [{
@@ -163,11 +160,36 @@ module.exports = {
       // 用id来标识 happypack处理那里类文件
       id: 'babel',
       // 如何处理  用法和loader的配置一样
-      loaders: ['babel-loader?cacheDirectory'],
+      loaders: ['cache-loader', 'babel-loader?cacheDirectory'],
       // 共享进程池
       threadPool: happyThreadPool,
       // 允许 HappyPack 输出日志
       verbose: true,
-    })
+    }),
+    new HappyPack({
+      // 用id来标识 happypack处理那里类文件
+      id: 'css',
+      // 如何处理  用法和loader的配置一样
+      loaders: ['cache-loader', {
+        loader: 'css-loader',
+        options: {
+          minimize: true //css压缩
+        }
+      }, 'postcss-loader'],
+      // 共享进程池
+      threadPool: happyThreadPool,
+      // 允许 HappyPack 输出日志
+      verbose: true,
+    }),
+    new HappyPack({
+      // 用id来标识 happypack处理那里类文件
+      id: 'sass',
+      // 如何处理  用法和loader的配置一样
+      loaders: ['cache-loader', 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
+      // 共享进程池
+      threadPool: happyThreadPool,
+      // 允许 HappyPack 输出日志
+      verbose: true,
+    }),
   ]
 }

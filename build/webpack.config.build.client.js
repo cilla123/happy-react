@@ -4,12 +4,14 @@ const { GenerateSW } = require('workbox-webpack-plugin')
 const AutoDllPlugin = require('autodll-webpack-plugin')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
 const PurifyCssWebpack = require('purifycss-webpack')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 const path = require('path')
-
 const glob = require('glob')
 
 // package.json
 const package = require('../package.json')
+const smp = new SpeedMeasurePlugin()
 
 /**
  * 转换为绝对路径
@@ -18,8 +20,20 @@ function resolve(dir) {
   return path.join(__dirname, dir);
 }
 
-const config = {
+const config = smp.wrap({
   plugins: [
+    // 查看打包结果日志
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'server',
+      analyzerHost: '127.0.0.1',
+      analyzerPort: 8888,
+      reportFilename: 'report.html',
+      defaultSizes: 'parsed',
+      openAnalyzer: false,
+      generateStatsFile: false,
+      statsFilename: 'stats.json',
+      logLevel: 'info'
+    }),
     // 消除冗余的css代码
     new PurifyCssWebpack({
       paths: glob.sync(resolve('../src/*.html'))
@@ -72,6 +86,6 @@ const config = {
       }
     })
   ]
-}
+})
 
 module.exports = config;

@@ -12,3 +12,6 @@ dist/
 
 # vscode
 .vscode
+
+# .cache-loader
+.cache-loader
