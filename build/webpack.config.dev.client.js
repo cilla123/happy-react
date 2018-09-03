@@ -24,6 +24,7 @@ const config = {
     overlay: {
       errors: true,
     },
+    inline: true,
     contentBase: path.join(__dirname, '../dist'),
     publicPath: GLOBAL_CONFIG.cdnPath,
     historyApiFallback: {

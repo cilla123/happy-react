@@ -3,44 +3,39 @@ const HTMLPlugin = require('html-webpack-plugin')
 const { GenerateSW } = require('workbox-webpack-plugin')
 const AutoDllPlugin = require('autodll-webpack-plugin')
 const ParallelUglifyPlugin = require('webpack-parallel-uglify-plugin')
-const PurifyCssWebpack = require('purifycss-webpack')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const path = require('path')
-const glob = require('glob')
 
-// package.json
-const package = require('../package.json')
 const smp = new SpeedMeasurePlugin()
 
-/**
- * 转换为绝对路径
- */
-function resolve(dir) {
-  return path.join(__dirname, dir);
-}
-
 const config = smp.wrap({
+  optimization: {
+    minimizer: [
+      new OptimizeCSSAssetsPlugin({})
+    ]
+  },
   plugins: [
     // 查看打包结果日志
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'server',
-      analyzerHost: '127.0.0.1',
-      analyzerPort: 8888,
-      reportFilename: 'report.html',
-      defaultSizes: 'parsed',
-      openAnalyzer: false,
-      generateStatsFile: false,
-      statsFilename: 'stats.json',
-      logLevel: 'info'
-    }),
-    // 消除冗余的css代码
-    new PurifyCssWebpack({
-      paths: glob.sync(resolve('../src/*.html'))
-    }),
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'server',
+    //   analyzerHost: '127.0.0.1',
+    //   analyzerPort: 8888,
+    //   reportFilename: 'report.html',
+    //   defaultSizes: 'parsed',
+    //   openAnalyzer: false,
+    //   generateStatsFile: false,
+    //   statsFilename: 'stats.json',
+    //   logLevel: 'info',
+    // }),
     new HTMLPlugin({
       template: path.join(__dirname, '../src/client/index.html'),
-      minify: true, // 传一个html-minifier 配置object来压缩输出
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: true
+      }, // 传一个html-minifier 配置object来压缩输出
       hash: true, // 如果是true，会给所有包含的script和css添加一个唯一的webpack编译hash值。这对于缓存清除非常有用
     }),
     // pwa 插件
@@ -65,13 +60,13 @@ const config = smp.wrap({
       debug: true,
       filename: 'dll_[name]_[hash].js',
       entry: {
-        vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'react-router', 'react-router-dom']
+        vendor: ['react', 'react-dom', 'mobx', 'mobx-react', 'react-router', 'react-router-dom'],
       }
     }),
     // 把对JS文件的串行压缩变为开启多个子进程并行进行uglify
     new ParallelUglifyPlugin({
       workerCount: 4,
-      sourceMap: true,
+      sourceMap: false,
       uglifyJS: {
         output: {
           beautify: false, // 不需要格式化
